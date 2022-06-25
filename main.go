@@ -4,7 +4,9 @@ import (
     "fmt"
     "strings"
     "flag"
+    "os"
     "github.com/gocolly/colly"
+    "github.com/jedib0t/go-pretty/v6/table"
 )
 
 func main() {
@@ -26,7 +28,7 @@ func main() {
         r.Headers.Set("Cookie", "MoodleSession=" + session)
     })
     collector.OnHTML("#layer2_right_current_course_stu .course-link", func(e *colly.HTMLElement) {
-        fmt.Println(strings.Trim(e.Text, " \t"))
+        //fmt.Println(strings.Trim(e.Text, " \t"))
         ids = append(ids, strings.Split(e.Attr("href"), "id=")[1])
     })
 
@@ -98,29 +100,42 @@ func main() {
         collector.Visit(fmt.Sprintf(url + "local/courseextension/index.php?courseid=%s&scope=assignment", id))
     }
     // in progress
-    fmt.Println("[In Progress]")
+    fmt.Println("\033[33m[In Progress]\033[0m")
+    t_in_progress := table.NewWriter()
+    t_in_progress.SetOutputMirror(os.Stdout)
+    t_in_progress.AppendHeader(table.Row{"Name", "Start", "Due", "Status"})
     for i := 0; i < len(in_progress[0]); i++ {
-        fmt.Println("Name: ", in_progress[0][i])
-        fmt.Println("Start: ", in_progress[1][i])
-        fmt.Println("Due: ", in_progress[2][i])
-        fmt.Println("Status: ", in_progress[3][i], "\n")
+        name := in_progress[0][i]
+        start := in_progress[1][i]
+        due := in_progress[2][i]
+        status := in_progress[3][i]
+        t_in_progress.AppendRow([]interface{}{name, start, due, status})
     }
-    fmt.Println("---------------\n")
+    t_in_progress.Render()
     // submitted
-    fmt.Println("[Submitted]")
+    fmt.Println("\033[36m[Submitted]\033[0m")
+    t_submitted := table.NewWriter()
+    t_submitted.SetOutputMirror(os.Stdout)
+    t_submitted.AppendHeader(table.Row{"Name", "Start", "Due", "Status"})
     for i := 0; i < len(submitted[0]); i++ {
-        fmt.Println("Name: ", submitted[0][i])
-        fmt.Println("Start: ", submitted[1][i])
-        fmt.Println("Due: ", submitted[2][i])
-        fmt.Println("Status: ", submitted[3][i], "\n")
+        name := submitted[0][i]
+        start := submitted[1][i]
+        due := submitted[2][i]
+        status := submitted[3][i]
+        t_submitted.AppendRow([]interface{}{name, start, due, status})
     }
-    fmt.Println("---------------\n")
+    t_submitted.Render()
     // overdue
-    fmt.Println("[Overdue]")
+    fmt.Println("\033[31m[Overdue]\033[0m")
+    t_overdue := table.NewWriter()
+    t_overdue.SetOutputMirror(os.Stdout)
+    t_overdue.AppendHeader(table.Row{"Name", "Start", "Due", "Status"})
     for i := 0; i < len(overdue[0]); i++ {
-        fmt.Println("Name: ", overdue[0][i])
-        fmt.Println("Start: ", overdue[1][i])
-        fmt.Println("Due: ", overdue[2][i])
-        fmt.Println("Status: ", overdue[3][i], "\n")
+        name := overdue[0][i]
+        start := overdue[1][i]
+        due := overdue[2][i]
+        status := overdue[3][i]
+        t_overdue.AppendRow([]interface{}{name, start, due, status})
     }
+    t_overdue.Render()
 }
