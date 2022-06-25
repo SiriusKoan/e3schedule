@@ -3,7 +3,6 @@ package main
 import (
     "fmt"
     "strings"
-    //"os"
     "flag"
     "github.com/gocolly/colly"
 )
@@ -29,14 +28,10 @@ func main() {
     collector.OnHTML("#layer2_right_current_course_stu .course-link", func(e *colly.HTMLElement) {
         fmt.Println(strings.Trim(e.Text, " \t"))
         ids = append(ids, strings.Split(e.Attr("href"), "id=")[1])
-        //collector.Visi)(fmt.Sprintf(url + "local/courseextension/index.php?courseid=%s&scope=assignment", id))
     })
-    /*
-    */
 
     collector.Visit(url)
 
-    //cur := 0;
     // in progress
     var in_progress [4][]string
     collector.OnHTML("#news-view-basic-in-progress tbody tr .instancename", func(e *colly.HTMLElement) {
@@ -56,23 +51,42 @@ func main() {
         in_progress[3] = append(in_progress[3], strings.Trim(e.Text, " \t"))
     })
 
-    // done
-    var done [4][]string
+    // submitted
+    var submitted [4][]string
     collector.OnHTML("#news-view-nofile2-tobegraded-in-progress tbody tr .instancename", func(e *colly.HTMLElement) {
         // HW name
-        done[0] = append(done[0], strings.Trim(e.Text, " \t"))
+        submitted[0] = append(submitted[0], strings.Trim(e.Text, " \t"))
     })
     collector.OnHTML("#news-view-nofile2-tobegraded-in-progress tbody tr td:nth-child(2)", func(e *colly.HTMLElement) {
         // start date
-        done[1] = append(done[1], strings.Trim(e.Text, " \t"))
+        submitted[1] = append(submitted[1], strings.Trim(e.Text, " \t"))
     })
     collector.OnHTML("#news-view-nofile2-tobegraded-in-progress tbody tr td:nth-child(3)", func(e *colly.HTMLElement) {
         // due date
-        done[2] = append(done[2], strings.Trim(e.Text, " \t"))
+        submitted[2] = append(submitted[2], strings.Trim(e.Text, " \t"))
     })
     collector.OnHTML("#news-view-nofile2-tobegraded-in-progress tbody tr td:nth-child(4)", func(e *colly.HTMLElement) {
         // people count
-        done[3] = append(done[3], strings.Trim(e.Text, " \t"))
+        submitted[3] = append(submitted[3], strings.Trim(e.Text, " \t"))
+    })
+    
+    // overdue
+    var overdue [4][]string
+    collector.OnHTML("#news-view-nofile2-notsubmitted-in-progress tbody tr .instancename", func(e *colly.HTMLElement) {
+        // HW name
+        overdue[0] = append(overdue[0], strings.Trim(e.Text, " \t"))
+    })
+    collector.OnHTML("#news-view-nofile2-notsubmitted-in-progress tbody tr td:nth-child(2)", func(e *colly.HTMLElement) {
+        // start date
+        overdue[1] = append(overdue[1], strings.Trim(e.Text, " \t"))
+    })
+    collector.OnHTML("#news-view-nofile2-notsubmitted-in-progress tbody tr td:nth-child(3)", func(e *colly.HTMLElement) {
+        // due date
+        overdue[2] = append(overdue[2], strings.Trim(e.Text, " \t"))
+    })
+    collector.OnHTML("#news-view-nofile2-notsubmitted-in-progress tbody tr td:nth-child(4)", func(e *colly.HTMLElement) {
+        // people count
+        overdue[3] = append(overdue[3], strings.Trim(e.Text, " \t"))
     })
     /*
     collector.OnHTML("#news-view-nofile2-notsubmitted-in-progress tbody tr", func(e *colly.HTMLElement) {
@@ -91,13 +105,22 @@ func main() {
         fmt.Println("Due: ", in_progress[2][i])
         fmt.Println("Status: ", in_progress[3][i], "\n")
     }
-    fmt.Println("---------------")
-    // done
-    fmt.Println("[Done (Submitted)]")
-    for i := 0; i < len(done[0]); i++ {
-        fmt.Println("Name: ", done[0][i])
-        fmt.Println("Start: ", done[1][i])
-        fmt.Println("Due: ", done[2][i])
-        fmt.Println("Status: ", done[3][i], "\n")
+    fmt.Println("---------------\n")
+    // submitted
+    fmt.Println("[Submitted]")
+    for i := 0; i < len(submitted[0]); i++ {
+        fmt.Println("Name: ", submitted[0][i])
+        fmt.Println("Start: ", submitted[1][i])
+        fmt.Println("Due: ", submitted[2][i])
+        fmt.Println("Status: ", submitted[3][i], "\n")
+    }
+    fmt.Println("---------------\n")
+    // overdue
+    fmt.Println("[Overdue]")
+    for i := 0; i < len(overdue[0]); i++ {
+        fmt.Println("Name: ", overdue[0][i])
+        fmt.Println("Start: ", overdue[1][i])
+        fmt.Println("Due: ", overdue[2][i])
+        fmt.Println("Status: ", overdue[3][i], "\n")
     }
 }
