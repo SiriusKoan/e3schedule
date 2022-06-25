@@ -12,13 +12,14 @@ import (
 func main() {
     var ids []string
     url := "https://e3.nycu.edu.tw/"
-    var update bool
-    flag.BoolVar(&update, "update", false, "force update or not")
-    flag.BoolVar(&update, "u", false, "force update or not")
     var session string
     flag.StringVar(&session, "session", "", "session cookie")
     flag.StringVar(&session, "s", "", "session cookie")
     flag.Parse()
+    if session == "" {
+        fmt.Println("Session cookie must be provided.")
+        os.Exit(1)
+    }
 
     collector := colly.NewCollector()
     collector.OnResponse(func(r *colly.Response){
