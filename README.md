@@ -1,0 +1,10 @@
+# e3schedule
+A simple tool for listing homework on E3 system.
+
+## Usage
+```
+$ e3schedule -s [session cookie] [-only-in-progress]
+```
+
+- `-s` or `--session` - set session cookie
+- `-only-in-progress` - only show in progress homework
