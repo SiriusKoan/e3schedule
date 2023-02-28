@@ -9,19 +9,22 @@ import (
     "github.com/jedib0t/go-pretty/v6/table"
 )
 
+
 func main() {
-    var ids []string
-    url := "https://e3.nycu.edu.tw/"
     var session string
+    var only_in_progress bool
     flag.StringVar(&session, "session", "", "Set session cookie")
     flag.StringVar(&session, "s", "", "Set session cookie")
-    var only_in_progress bool
     flag.BoolVar(&only_in_progress, "only-in-progress", false, "Only show in progress homework.")
     flag.Parse()
-    if session == "" {
-        fmt.Println("Session cookie must be provided.")
-        os.Exit(1)
+    for session == "" {
+        fmt.Print("Please enter your session (the cookie `MoodleSession`): ")
+        fmt.Scanln(&session)
     }
+    fmt.Println("Fecthing the data, please wait...")
+
+    var ids []string
+    url := "https://e3.nycu.edu.tw/"
 
     collector := colly.NewCollector()
     collector.OnResponse(func(r *colly.Response){
@@ -61,7 +64,7 @@ func main() {
     })
     var submitted [5][]string
     var overdue [5][]string
-    if !only_in_progress{
+    if !only_in_progress {
         // submitted
         collector.OnHTML("#news-view-nofile2-tobegraded-in-progress tbody tr .instancename", func(e *colly.HTMLElement) {
             // HW name
