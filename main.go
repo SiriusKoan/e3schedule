@@ -17,9 +17,11 @@ func main() {
     flag.StringVar(&session, "s", "", "Set session cookie")
     flag.BoolVar(&only_in_progress, "only-in-progress", false, "Only show in progress homework.")
     flag.Parse()
+    pause := false
     for session == "" {
         fmt.Print("Please enter your session (the cookie `MoodleSession`): ")
         fmt.Scanln(&session)
+        pause = true
     }
     fmt.Println("Fecthing the data, please wait...")
 
@@ -152,5 +154,9 @@ func main() {
             t_overdue.AppendRow([]interface{}{name, start, due, status})
         }
         t_overdue.Render()
+    }
+    if pause {
+        fmt.Println("Press the Enter Key to terminate the console screen!")
+        fmt.Scanln()
     }
 }
